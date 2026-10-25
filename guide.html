@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b7a8c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Training Log Guide">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%230b7a8c%22%2F%3E%3Cpath%20d%3D%22M14%2024v16M20%2020v24M44%2020v24M50%2024v16M20%2032h24%22%20stroke%3D%22%23fff%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E"><link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%230b7a8c%22%2F%3E%3Cpath%20d%3D%22M14%2024v16M20%2020v24M44%2020v24M50%2024v16M20%2032h24%22%20stroke%3D%22%23fff%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E">
+<title>Training Log Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: one readable column, short numbered steps for the parts done in order, plain lists for the rest. Same look as the app. */
+:root{
+  --bg:#eceff2; --surface:#ffffff; --field:#f2f5f7; --ink:#111820; --muted:#5a6876; --line:#d6dde4; --accent:#0b7a8c; --accent-ink:#ffffff; --accent-soft:#d9eef1; --good:#1d8a57;
+  --display:'Barlow Condensed','Arial Narrow',system-ui,sans-serif; --body:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0d1217; --surface:#161d25; --field:#1e2832; --ink:#e9eef3; --muted:#8e9ba8; --line:#27323d; --accent:#3fc0d4; --accent-ink:#06222a; --accent-soft:#12303a; --good:#44cf91; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0d1217; --surface:#161d25; --field:#1e2832; --ink:#e9eef3; --muted:#8e9ba8; --line:#27323d; --accent:#3fc0d4; --accent-ink:#06222a; --accent-soft:#12303a; --good:#44cf91; color-scheme:dark; }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:17px/1.55 var(--body);padding-block:0 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:620px;margin:0 auto;padding-top:22px;display:grid;gap:26px}
+h1,h2{font-family:var(--display);font-weight:700;margin:0;letter-spacing:.02em;text-transform:uppercase;text-wrap:balance}
+h1{font-size:40px;line-height:1.02}
+h2{font-size:25px;line-height:1.1;margin-bottom:8px}
+p{margin:0 0 10px}
+.lead{color:var(--muted);font-size:18px}
+section{display:block}
+ul,ol{margin:0;padding-left:22px;display:grid;gap:7px}
+li::marker{color:var(--accent);font-weight:700}
+b,strong{font-weight:600}
+.note{background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+/* a picture of one set row, as it looks in the app */
+.mock{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;font-variant-numeric:tabular-nums}
+.mock .cap{padding:10px 14px 6px}
+.mock .cap b{font:700 19px var(--display);text-transform:uppercase;letter-spacing:.02em}
+.mock .cap span{display:block;font-size:13px;color:var(--muted)}
+.mrow{display:grid;grid-template-columns:26px 1fr 1fr 54px 40px;gap:7px;align-items:center;padding:6px 12px;border-top:1px solid var(--line)}
+.mrow.h{border-top:0;padding-block:0 3px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:center}
+.mrow .s{font:700 17px var(--display);color:var(--muted);text-align:center}
+.c{height:42px;border-radius:9px;background:var(--field);border:1px solid var(--line);display:grid;place-items:center;font:600 20px var(--display)}
+.c.ph{color:var(--muted);opacity:.6}
+.t{height:42px;border-radius:9px;background:var(--field);border:1px solid var(--line);display:grid;place-items:center}
+.t.on{background:var(--accent);border-color:var(--accent)}
+.t svg{width:19px;height:19px;stroke:var(--muted);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.t.on svg{stroke:var(--accent-ink)}
+.label{font-size:14px;color:var(--muted);margin-top:8px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 12px}
+.tabs span{font:700 15px var(--display);letter-spacing:.08em;text-transform:uppercase;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:5px 12px}
+.pr{display:inline-block;font:700 12px var(--display);letter-spacing:.1em;background:var(--good);color:#fff;border-radius:6px;padding:2px 6px}
+</style>
+</head><body>
+<main>
+  <p style="margin:0"><a href="./" style="color:var(--accent);font-weight:600;text-decoration:none">&larr; Back to the log</a></p>
+  <header>
+    <h1>Your training log</h1>
+    <p class="lead">A simple way to record each workout of the Huberman protocol, and to see yourself getting stronger. Built for use between sets, so it asks for as little as possible.</p>
+  </header>
+
+  <section>
+    <h2>Before you start</h2>
+    <p>The app has four sections along the bottom of the screen.</p>
+    <div class="tabs"><span>Today</span><span>History</span><span>Progress</span><span>More</span></div>
+    <ul>
+      <li><b>Today</b> is where you log a workout.</li>
+      <li><b>History</b> lists every session you have done.</li>
+      <li><b>Progress</b> charts your lifts and cardio over time.</li>
+      <li><b>More</b> holds settings, backup, and the full protocol sheets.</li>
+    </ul>
+    <div class="note" style="margin-top:12px"><b>Everything is saved on your phone, in your browser.</b> Nothing is sent anywhere and there is no account. That also means your log is tied to this phone and to the way you opened the app. Use one link or one file every time, and do not switch between them, or you will see an empty log.</div>
+  </section>
+
+  <section>
+    <h2>Logging a lifting day</h2>
+    <ol>
+      <li>Open <b>Today</b>. The app suggests the next day in your cycle. Tap <b>Start</b>, or pick any day from the list.</li>
+      <li>For each set, type the <b>weight</b> and the <b>reps</b>. RPE (how hard it felt, out of 10) is optional.</li>
+      <li>Tap the <b>check</b> at the end of the row when the set is done. A small rest timer starts.</li>
+      <li>When you finish, tap <b>Done</b> at the bottom. You can also just close the app: it saves as you type.</li>
+    </ol>
+    <div class="mock" style="margin-top:14px" aria-hidden="true">
+      <div class="cap"><b>Back Squats</b> <span class="pr">PR</span><span>Last time (Oct 22): 155 lb × 7, 7, 6, 6</span></div>
+      <div class="mrow h"><span>Set</span><span>LB</span><span>Reps</span><span>RPE</span><span></span></div>
+      <div class="mrow"><span class="s">1</span><span class="c">185</span><span class="c">6</span><span class="c"></span><span class="t on"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></div>
+      <div class="mrow"><span class="s">2</span><span class="c ph">155</span><span class="c ph">7</span><span class="c"></span><span class="t"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span></div>
+    </div>
+    <p class="label">Set 1 is done. Set 2 shows last time's numbers in grey as a reminder.</p>
+  </section>
+
+  <section>
+    <h2>Things that save you time</h2>
+    <ul>
+      <li><b>Grey numbers are last time's.</b> Under each exercise name you also see exactly what you did last session.</li>
+      <li><b>Same as last time?</b> Leave the boxes empty and tap the check. It fills in last session's weight and reps for that set.</li>
+      <li><b>Different number of sets.</b> Use <b>+ Set</b> or <b>− Set</b> under the exercise. Each exercise starts with four.</li>
+      <li><b>Exercise note.</b> Tap <b>Note</b> to jot something about one exercise, like "left knee tight". There is also a notes box for the whole session.</li>
+      <li><b>Extra exercise.</b> Type a name in the "Add an exercise" box at the bottom and tap Add. It only applies to that session.</li>
+      <li><b>Pull-ups and dips.</b> The weight box means <i>added</i> weight. Leave it blank for bodyweight.</li>
+      <li><b>Nudges.</b> If every set hit 8 reps last time, you will see a reminder to add weight. A <span class="pr">PR</span> badge appears when you beat your best on that lift.</li>
+      <li><b>Rest timer.</b> It counts up after each check and turns bright between 2 and 4 minutes, the protocol's rest window. Tap the × to hide it, or turn it off in More.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Cardio and recovery days</h2>
+    <p>Days 1, 5 and 6 (long endurance, moderate cardio, HIIT) and Day 3 (rest and recovery) have short forms instead of sets: activity, duration, rounds, heart rate, sauna time, NSDR, sleep, and how recovered you feel. Fill in what applies. Grey text shows what you entered last time on that day.</p>
+  </section>
+
+  <section>
+    <h2>Dates and times</h2>
+    <p>The date is filled in with today. Change it if you are logging an earlier workout. Time is optional: tap <b>Add time</b> to stamp the current time, then edit it if you like.</p>
+  </section>
+
+  <section>
+    <h2>The protocol sheets</h2>
+    <p>Not sure what a day calls for? In <b>More</b>, tap <b>Open the protocol sheets</b>, or tap <b>Day sheet</b> at the top of any session. You get the full Schedule A page for that day: targets, exercises, recovery menu and the notes at the bottom.</p>
+  </section>
+
+  <section>
+    <h2>History and fixing mistakes</h2>
+    <p>Open <b>History</b> and tap any session to see it again. Everything in it can be edited, including the date. To remove a session, open it and tap <b>Delete this session</b> at the bottom. You have to tap twice, so you cannot do it by accident.</p>
+  </section>
+
+  <section>
+    <h2>Watching your progress</h2>
+    <ul>
+      <li>Open <b>Progress</b> and choose a lift from the menu. You also have Zone 2 minutes, cardio minutes, HIIT rounds and sauna minutes.</li>
+      <li>For lifts, pick what the chart shows: <b>Est. 1RM</b> (a calculated estimate of your one-rep max, the best single measure of strength across different rep counts), <b>Heaviest</b> weight, or total <b>Volume</b> (weight × reps).</li>
+      <li>Under the chart you see your best result and how much it has changed since your first session.</li>
+      <li>The list below shows every lift, first session against your latest. Tap one to chart it.</li>
+      <li>You need at least two sessions of an exercise before its chart draws a line.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Back up your log</h2>
+    <p>Because your log lives only on your phone, it is lost if you clear your browser data or switch phones. Every few weeks:</p>
+    <ol>
+      <li>Open <b>More</b> and tap <b>Copy backup</b>.</li>
+      <li>Paste it into a note or message to yourself.</li>
+    </ol>
+    <p style="margin-top:10px">To restore it later, open More, tap <b>Restore from backup</b>, paste the text and confirm. Restoring replaces what is currently in the app.</p>
+  </section>
+
+  <section>
+    <h2>Other settings</h2>
+    <ul>
+      <li><b>Weight unit:</b> lb or kg. This only changes the label. It does not convert numbers you already typed.</li>
+      <li><b>Example data:</b> More has a preview button that fills in six weeks of made-up sessions so you can see how the charts look. They are marked "example" and one tap on <b>Remove</b> clears them without touching your real logs.</li>
+      <li><b>Erase all data:</b> wipes everything. It also asks for a second tap.</li>
+    </ul>
+  </section>
+</main>
+</body></html>
