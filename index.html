@@ -407,7 +407,7 @@ function vFields(s) {
     const v = f[fd.k] ?? '';
     if (fd.t === 'chips') return `<div><div class="eyebrow" style="margin-bottom:8px">${fd.label}</div><div class="chips">${fd.opts.map((o) => `<button class="chip ${v === o ? 'on' : ''}" data-a="chip" data-k="${fd.k}" data-v="${o}">${o}</button>`).join('')}</div></div>`;
     const ph = last && last.f[fd.k] ? 'Last: ' + last.f[fd.k] : '';
-    return `<label class="f">${fd.label}${fd.unit ? ` <span style="font-weight:400">(${fd.unit})</span>` : ''}<input id="k-${fd.k}" data-f="field" data-k="${fd.k}" data-t="${fd.t}" ${fd.t === 'num' ? 'inputmode="decimal"' : 'type="text"'} autocomplete="off" value="${esc(v)}" placeholder="${esc(ph)}"></label>`;
+    return `<label class="f"><span>${fd.label}${fd.unit ? ` <span style="font-weight:400">(${fd.unit})</span>` : ''}</span><input id="k-${fd.k}" data-f="field" data-k="${fd.k}" data-t="${fd.t}" ${fd.t === 'num' ? 'inputmode="decimal"' : 'type="text"'} autocomplete="off" value="${esc(v)}" placeholder="${esc(ph)}"></label>`;
   }).join('');
 }
 
