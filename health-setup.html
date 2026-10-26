@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b7a8c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Health to Hub Setup">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%230b7a8c%22%2F%3E%3Cpath%20d%3D%22M14%2024v16M20%2020v24M44%2020v24M50%2024v16M20%2032h24%22%20stroke%3D%22%23fff%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E"><link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%230b7a8c%22%2F%3E%3Cpath%20d%3D%22M14%2024v16M20%2020v24M44%2020v24M50%2024v16M20%2032h24%22%20stroke%3D%22%23fff%22%20stroke-width%3D%225%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E">
+<title>Health to Hub Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: one step at a time, big type, one button to move on. Same look as the training log. */
+:root{
+  --bg:#eceff2; --surface:#ffffff; --field:#f2f5f7; --ink:#111820; --muted:#5a6876; --line:#d6dde4; --accent:#0b7a8c; --accent-ink:#ffffff; --accent-soft:#d9eef1; --good:#1d8a57; --good-soft:#dcf1e6;
+  --display:'Barlow Condensed','Arial Narrow',system-ui,sans-serif; --body:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0d1217; --surface:#161d25; --field:#1e2832; --ink:#e9eef3; --muted:#8e9ba8; --line:#27323d; --accent:#3fc0d4; --accent-ink:#06222a; --accent-soft:#12303a; --good:#44cf91; --good-soft:#123326; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0d1217; --surface:#161d25; --field:#1e2832; --ink:#e9eef3; --muted:#8e9ba8; --line:#27323d; --accent:#3fc0d4; --accent-ink:#06222a; --accent-soft:#12303a; --good:#44cf91; --good-soft:#123326; color-scheme:dark; }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:20px/1.5 var(--body);padding-block:0 120px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:620px;margin:0 auto;padding-top:18px;display:grid;gap:16px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--muted);font-size:16px}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .2s}
+.part{font:700 15px var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 40px/1.05 var(--display);text-transform:uppercase;letter-spacing:.02em;margin:0;text-wrap:balance}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:14px}
+.step .do{font-size:22px;font-weight:500}
+.step .do b{font-weight:700}
+.see{background:var(--good-soft);border-radius:12px;padding:12px 14px;font-size:18px}
+.see span{display:block;font:700 13px var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--good);margin-bottom:2px}
+.type{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--field);border:1px solid var(--line);border-radius:8px;padding:1px 8px;font-size:.95em;white-space:nowrap}
+details{font-size:17px;color:var(--muted)}
+summary{cursor:pointer;font-weight:600;color:var(--accent);min-height:36px;display:flex;align-items:center}
+details p{margin:6px 0 0}
+.nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);
+  padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.nav-in{max-width:620px;margin:0 auto;display:grid;grid-template-columns:1fr 2fr;gap:10px}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{min-height:58px;border-radius:14px;border:1px solid var(--line);background:var(--field);font-weight:700;font-size:20px}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.linkbtn{background:none;border:0;color:var(--accent);font-weight:600;font-size:16px;padding:6px 0;min-height:36px}
+table{width:100%;border-collapse:collapse;font-size:16px}
+th,td{text-align:left;padding:8px 6px;border-top:1px solid var(--line);vertical-align:top}
+th{font:700 13px var(--display);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-top:0}
+.scroll{overflow-x:auto}
+.note{background:var(--accent-soft);border-radius:12px;padding:12px 14px;font-size:17px}
+</style>
+</head><body>
+<main>
+  <div class="top"><span id="count"></span><button class="linkbtn" id="restart" hidden>Start over</button></div>
+  <div class="bar" aria-hidden="true"><i id="fill"></i></div>
+  <div id="card"></div>
+</main>
+<div class="nav"><div class="nav-in"><button class="btn" id="back">Back</button><button class="btn primary" id="next">Next</button></div></div>
+<script>
+(() => {
+'use strict';
+const T = (s) => `<span class="type">${s}</span>`;
+const STEPS = [
+  { part: 'Before we start', title: 'What we are making', body: `<p class="do">We are making a small button on your phone. When you tap it, it gets your health numbers and copies them. Then you paste them into your Training Log.</p><p class="do">We will go <b>one step at a time</b>. Do one step, then tap <b>Next</b>.</p>`,
+    help: 'Apple sometimes changes the names on its screens. If a screen looks different from what is written here, take a picture of it and send it to Mark.' },
+  { part: 'Part 1: Open Shortcuts', title: 'Find the Shortcuts app', body: `<p class="do">Swipe down in the middle of your Home Screen. Type: ${T('Shortcuts')} Tap the app that has colorful squares.</p>`,
+    see: 'A screen with the word Shortcuts at the top.', help: 'Can not find it? Open the App Store. Search for Shortcuts. It is made by Apple and it is free. Tap Get.' },
+  { part: 'Part 1: Open Shortcuts', title: 'Start a new shortcut', body: `<p class="do">Tap the <b>plus sign (+)</b> in the top right corner.</p>`, see: 'A new, empty shortcut.' },
+  { part: 'Part 1: Open Shortcuts', title: 'Give it a name', body: `<p class="do">Tap the name at the top. Tap <b>Rename</b>. Type: ${T('Health to Hub')} Tap <b>Done</b>.</p>`, see: 'The name Health to Hub at the top.' },
+  { part: 'Part 2: Add the blocks', title: 'How blocks work', body: `<p class="do">Each box in a shortcut is called an <b>action</b>. We will stack <b>7 actions</b>, like building blocks. The <b>order matters</b>, so add them one after another.</p>`, help: 'If you add one by mistake, swipe it to the left and tap Delete.' },
+  { part: 'Part 2: Add the blocks', title: 'Block 1: Date', body: `<p class="do">Tap <b>Add Action</b>. In the search box, type: ${T('Date')} Tap <b>Date</b>. It may say Current Date.</p>`, see: 'A block that says Current Date.' },
+  { part: 'Part 2: Add the blocks', title: 'Block 2: Format Date', body: `<p class="do">Tap the search box again. Type: ${T('Format Date')} Tap <b>Format Date</b>.</p>`, see: 'A block that says Format Date, with the word Short in it.' },
+  { part: 'Part 2: Add the blocks', title: 'Choose the date style', body: `<p class="do">In that block, tap the word <b>Short</b>. Tap <b>Custom</b>. A new line appears. Type exactly: ${T('yyyy-MM-dd')}</p><p class="do">Small <b>y</b>. Small <b>d</b>. Big <b>M</b>.</p>`, see: 'The block shows yyyy-MM-dd.', help: 'The M must be a big letter. A small m means minutes, not months.' },
+  { part: 'Part 2: Add the blocks', title: 'Block 3: Find Health Samples', body: `<p class="do">Tap the search box. Type: ${T('Find Health Samples')} Tap it.</p>`, see: 'A block with the words Find Health Samples.' },
+  { part: 'Part 2: Add the blocks', title: 'Choose the number: steps', body: `<p class="do">In that block, tap <b>Add Filter</b>. Tap <b>Type</b>. Tap <b>Steps</b>.</p>`, see: 'A line that says Type is Steps.', help: 'The list is long. Use the search box at the top of the list and type Steps.' },
+  { part: 'Part 2: Add the blocks', title: 'Choose the day: today', body: `<p class="do">Tap <b>Add Filter</b> again. Tap <b>Start Date</b>. Tap the word next to it and choose <b>is Today</b>.</p>`, see: 'Two lines: Type is Steps, and Start Date is Today.', help: `No "is Today"? Choose "is in the last", type 1, and pick days.` },
+  { part: 'Part 2: Add the blocks', title: 'Block 4: Calculate Statistics', body: `<p class="do">Tap the search box. Type: ${T('Calculate Statistics')} Tap it. Tap the word <b>Average</b> and choose <b>Sum</b>.</p>`, see: 'A block that says Calculate Sum.' },
+  { part: 'Part 2: Add the blocks', title: 'Block 5: Set Variable', body: `<p class="do">This gives the number a name. Tap the search box. Type: ${T('Set Variable')} Tap it. Tap <b>Variable Name</b>. Type: ${T('Steps')}</p>`, see: 'A block that says Set variable Steps to Statistics.' },
+  { part: 'Part 2: Add the blocks', title: 'Block 6: Text', body: `<p class="do">Tap the search box. Type: ${T('Text')} Tap the one that is just called <b>Text</b>.</p>`, see: 'A block with a white box in it that says Text.' },
+  { part: 'Part 2: Add the blocks', title: 'Type the first line', body: `<p class="do">Tap inside the white box. Type: ${T('date:')} and then a space.</p><p class="do">Above the keyboard you will see little colored bubbles. Tap the bubble that says <b>Formatted Date</b>. Then tap <b>Return</b> on the keyboard.</p>`, see: 'The first line says date: and a blue Formatted Date bubble.', help: 'No bubbles? Tap the box, then tap the gray Variables button above the keyboard, and pick Formatted Date.' },
+  { part: 'Part 2: Add the blocks', title: 'Type the second line', body: `<p class="do">Type: ${T('steps:')} and then a space. Tap the bubble that says <b>Steps</b>.</p>`, see: 'Two lines: date with Formatted Date, and steps with Steps.', help: 'Type the words in small letters, just like you see them here. Apple may turn the colon into something fancy. That is okay.' },
+  { part: 'Part 2: Add the blocks', title: 'Block 7: Copy to Clipboard', body: `<p class="do">Tap the search box. Type: ${T('Copy to Clipboard')} Tap it. Then tap <b>Done</b> in the top right.</p>`, see: 'Seven blocks stacked up. The shortcut is saved.' },
+  { part: 'Part 3: Try it', title: 'Press play', body: `<p class="do">Tap the shortcut called <b>Health to Hub</b>. It runs.</p>`, see: 'A box that asks to use your Health information.' },
+  { part: 'Part 3: Try it', title: 'Say yes to Health', body: `<p class="do">Tap <b>Turn On All</b>. Then tap <b>Allow</b>. If it asks more than once, say yes each time.</p>`, see: 'The shortcut finishes. You may see a quick check mark.', help: 'This only lets the shortcut read the numbers on your own phone. You can turn it off later in the Health app.' },
+  { part: 'Part 3: Try it', title: 'Check the answer', body: `<p class="do">Open the <b>Notes</b> app. Start a new note. Touch and hold on the page. Tap <b>Paste</b>.</p>`, see: 'Two lines. date: with today\'s date. steps: with a number.', help: 'The steps number is missing or zero? Take a picture of the screen and send it to Mark. You can delete the note when you are done.' },
+  { part: 'Part 4: Send it to your log', title: 'Open your Training Log', body: `<p class="do">Open the Training Log the same way you always do. Tap <b>Health</b> at the bottom.</p>`, see: 'The Health screen.', help: 'Use the same icon or link every time, so your log is always in the same place.' },
+  { part: 'Part 4: Send it to your log', title: 'Paste your numbers', body: `<p class="do">Tap <b>Paste health data</b>. Touch and hold inside the white box. Tap <b>Paste</b>. If the phone asks, tap <b>Allow Paste</b>.</p>`, see: 'Your two lines in the box.' },
+  { part: 'Part 4: Send it to your log', title: 'Tap Import', body: `<p class="do">Tap <b>Import</b>.</p>`, see: 'A message that says Imported 1 day, and a Steps box on the screen.', help: 'Nothing happened? Take a picture of the screen and send it to Mark.' },
+  { part: 'All done', title: 'You did it', body: `<p class="do">Whenever you want to update your log: <b>1.</b> Tap Health to Hub. <b>2.</b> Open the Training Log. <b>3.</b> Paste and Import.</p><p class="do">Tip: do it at night, so it has the whole day of steps.</p><div class="note">To put the shortcut on your Home Screen, open it in Shortcuts, tap the small <b>share</b> button, and tap <b>Add to Home Screen</b>.</div>` },
+  { part: 'Later', title: 'Add more numbers', body: `<p class="do">When steps work, add the others one at a time. For each one, add the <b>same 3 actions</b> after your steps (before the Text block): <b>Find Health Samples</b>, <b>Calculate Statistics</b>, <b>Set Variable</b>. Then add one new line in the Text block, like ${T('protein:')} plus the bubble.</p>
+    <div class="scroll"><table><thead><tr><th>Line to type</th><th>Health type to pick</th><th>Statistic</th></tr></thead><tbody>
+    <tr><td>${T('protein:')}</td><td>Protein</td><td>Sum</td></tr>
+    <tr><td>${T('kcal:')}</td><td>Dietary Energy</td><td>Sum</td></tr>
+    <tr><td>${T('carbs:')}</td><td>Carbohydrates</td><td>Sum</td></tr>
+    <tr><td>${T('fat:')}</td><td>Total Fat</td><td>Sum</td></tr>
+    <tr><td>${T('weight:')}</td><td>Weight</td><td>Average, newest only*</td></tr>
+    <tr><td>${T('bf:')}</td><td>Body Fat Percentage</td><td>Average, newest only*</td></tr>
+    <tr><td>${T('hrv:')}</td><td>Heart Rate Variability</td><td>Average</td></tr>
+    <tr><td>${T('rhr:')}</td><td>Resting Heart Rate</td><td>Average</td></tr>
+    <tr><td>${T('active:')}</td><td>Active Energy</td><td>Sum</td></tr></tbody></table></div>
+    <p class="do" style="font-size:17px">*For weight and body fat, in Find Health Samples also set <b>Sort by Start Date, Latest First</b> and <b>Limit</b> to 1.</p>`,
+    help: 'Do one number at a time and run it each time to make sure it still works. Sleep is harder, so we will do that last with Mark.' }
+];
+let i = 0;
+try { const s = parseInt(localStorage.getItem('health-setup-step') || '0', 10); if (s >= 0 && s < STEPS.length) i = s; } catch (e) { /* no saved place */ }
+const $ = (id) => document.getElementById(id);
+function show() {
+  const s = STEPS[i];
+  $('count').textContent = `Step ${i + 1} of ${STEPS.length}`;
+  $('fill').style.width = ((i + 1) / STEPS.length) * 100 + '%';
+  $('card').innerHTML = `<div class="step"><div class="part">${s.part}</div><h1>${s.title}</h1>${s.body}${s.see ? `<div class="see"><span>You should see</span>${s.see}</div>` : ''}${s.help ? `<details><summary>Stuck?</summary><p>${s.help}</p></details>` : ''}</div>`;
+  $('back').disabled = i === 0;
+  $('next').textContent = i === STEPS.length - 1 ? 'Back to the start' : (i === 0 ? 'Let\'s begin' : 'Next');
+  $('restart').hidden = i === 0;
+  try { localStorage.setItem('health-setup-step', String(i)); } catch (e) { /* fine */ }
+  window.scrollTo(0, 0);
+}
+$('next').addEventListener('click', () => { i = i === STEPS.length - 1 ? 0 : i + 1; show(); });
+$('back').addEventListener('click', () => { if (i > 0) { i--; show(); } });
+$('restart').addEventListener('click', () => { i = 0; show(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') $('next').click(); if (e.key === 'ArrowLeft') $('back').click(); });
+show();
+})();
+</script>
+</body></html>
