@@ -165,6 +165,7 @@ const DAYS = {
     ['Standing Calf Raises', 'Calves'], ['Bent-Knee Calf Raises', 'Calves, seated style'], ['Neck Controlled Flexion', 'Slow and controlled, safety first'] ] }
 };
 const BW = new Set(['Pull-Ups', 'Dips']);
+const isBW = (name) => BW.has(name) || /pull-?up|chin-?up|\bdips?\b|push-?up|inverted row|bodyweight/i.test(name);
 
 /* The full printed sheets (Schedule A), kept word for word so nothing needs the PDF. */
 const SCHED = 'Sch A: 4–8 reps • 3–4 sets • 2–4 min';
@@ -244,12 +245,12 @@ const ordered = () => S.sessions.slice().sort((a, b) => (sortKey(a) < sortKey(b)
 const byId = (id) => S.sessions.find((s) => s.id === id);
 const U = () => S.unit;
 
-const validSet = (name, st) => n(st.r) > 0 && (BW.has(name) || n(st.w) > 0);
+const validSet = (name, st) => n(st.r) > 0 && (isBW(name) || n(st.w) > 0);
 const e1rm = (st) => n(st.w) * (1 + Math.min(n(st.r), 12) / 30);
-const setScore = (name, st) => (BW.has(name) ? n(st.w) * 100 + n(st.r) : e1rm(st));
+const setScore = (name, st) => (isBW(name) ? n(st.w) * 100 + n(st.r) : e1rm(st));
 function exStats(ex) {
   const v = ex.sets.filter((st) => validSet(ex.name, st));
-  const bw = BW.has(ex.name);
+  const bw = isBW(ex.name);
   return {
     count: v.length,
     e1rm: Math.max(0, ...v.map(e1rm)), top: Math.max(0, ...v.map((st) => n(st.w))),
@@ -282,7 +283,7 @@ function sessionSummary(s) {
 }
 
 /* ------------------------------------------------------------------ app state */
-const ui = { tab: 'today', proto: null, open: null, px: null, metric: null, noteOpen: {}, armed: '', rest: 0, restore: false, backup: '' };
+const ui = { tab: 'today', proto: null, swap: '', open: null, px: null, metric: null, noteOpen: {}, armed: '', rest: 0, restore: false, backup: '' };
 let toastT = 0;
 function toast(t) { const el = $('#toast'); el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (el.hidden = true), 2200); }
 
@@ -352,6 +353,7 @@ function vSession(s) {
   let body = '';
   if (d.kind === 'lift') {
     body = s.ex.map((ex, ei) => vExercise(s, ex, ei)).join('') +
+      `<datalist id="exlist">${[...new Set([...Object.values(DAYS).flatMap((x) => (x.ex || []).map((e) => e[0])), ...S.sessions.flatMap((x) => (x.ex || []).map((e) => e.name))])].sort().map((x) => `<option value="${esc(x)}">`).join('')}</datalist>` +
       `<div class="row"><input id="newex" type="text" placeholder="Add an exercise" aria-label="New exercise name" style="font-size:16px"><button class="btn" data-a="addex">Add</button></div>`;
   } else body = `<div class="card stack">${vFields(s)}</div>`;
   return `<div class="stack">
@@ -373,12 +375,12 @@ function vExercise(s, ex, ei) {
     const l = last ? (last.ex.sets[si] || last.ex.sets[last.ex.sets.length - 1]) : null;
     const lw = l && n(l.w) ? fmt(n(l.w)) : '';
     return `<div class="setrow ${st.done ? 'done' : ''}" id="r-${ei}-${si}"><span class="sn">${si + 1}</span>
-      <input class="cell" inputmode="decimal" autocomplete="off" data-f="w" data-ei="${ei}" data-si="${si}" value="${esc(st.w)}" placeholder="${esc(lw || (BW.has(ex.name) ? 'BW' : ''))}" aria-label="${esc(ex.name)} set ${si + 1} weight">
+      <input class="cell" inputmode="decimal" autocomplete="off" data-f="w" data-ei="${ei}" data-si="${si}" value="${esc(st.w)}" placeholder="${esc(lw || (isBW(ex.name) ? 'BW' : ''))}" aria-label="${esc(ex.name)} set ${si + 1} weight">
       <input class="cell" inputmode="numeric" autocomplete="off" data-f="r" data-ei="${ei}" data-si="${si}" value="${esc(st.r)}" placeholder="${l && n(l.r) ? fmt(n(l.r)) : ''}" aria-label="${esc(ex.name)} set ${si + 1} reps">
       <input class="cell" inputmode="decimal" autocomplete="off" data-f="rpe" data-ei="${ei}" data-si="${si}" value="${esc(st.rpe)}" placeholder="" aria-label="${esc(ex.name)} set ${si + 1} effort">
       <button class="tick" data-a="done" data-ei="${ei}" data-si="${si}" aria-label="Mark set ${si + 1} done" aria-pressed="${st.done}"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button></div>`;
   }).join('');
-  const meta = (DAYS[s.day].ex.find((e) => e[0] === ex.name) || [])[1] || '';
+  const meta = (DAYS[s.day].ex.find((e) => e[0] === (ex.orig || ex.name)) || [])[1] || '';
   let lastTxt = '', hint = '';
   if (last) {
     const v = last.ex.sets.filter((st) => validSet(ex.name, st));
@@ -394,11 +396,12 @@ function vExercise(s, ex, ei) {
     let best = 0; ex.sets.forEach((st, si) => { if (validSet(ex.name, st)) { const sc = setScore(ex.name, st); if (sc > best) { best = sc; if (sc > Math.max(...prior)) pr = si; else pr = -1; } } });
   }
   const showNote = ui.noteOpen[s.id + ei] || ex.note;
+  const swapPanel = ui.swap === s.id + ei ? `<div class="stack" style="padding:10px 14px 12px;border-top:1px solid var(--line)"><label class="f">Do this exercise instead<input id="swapname" list="exlist" type="text" autocomplete="off" value="${esc(ex.name)}" style="font-size:16px"></label><div class="row"><button class="btn primary grow" data-a="swapok" data-ei="${ei}">Use this</button><button class="btn" data-a="swapcancel">Cancel</button></div>${ex.orig ? `<button class="linkbtn" data-a="swapback" data-ei="${ei}">Change back to ${esc(ex.orig)}</button>` : ''}</div>` : '';
   return `<div class="card ex"><div class="ex-head"><h3>${esc(ex.name)}${pr >= 0 ? `<span class="pr">PR</span>` : ''}</h3>
-      ${meta ? `<div class="sub">${esc(meta)}</div>` : ''}${lastTxt ? `<div class="last num">${esc(lastTxt)}</div>` : ''}${hint ? `<div class="hint">${hint}</div>` : ''}</div>
-    <div class="sets"><div class="setrow hdr"><span>Set</span><span>${BW.has(ex.name) ? '+' + U() : U()}</span><span>Reps</span><span>RPE</span><span></span></div>${rows}</div>
+      ${ex.orig ? `<div class="sub">Instead of ${esc(ex.orig)}</div>` : ''}${meta ? `<div class="sub">${esc(meta)}</div>` : ''}${lastTxt ? `<div class="last num">${esc(lastTxt)}</div>` : ''}${hint ? `<div class="hint">${hint}</div>` : ''}</div>
+    <div class="sets"><div class="setrow hdr"><span>Set</span><span>${isBW(ex.name) ? '+' + U() : U()}</span><span>Reps</span><span>RPE</span><span></span></div>${rows}</div>
     ${showNote ? `<div style="padding:0 14px 10px"><input type="text" data-f="exnote" data-ei="${ei}" value="${esc(ex.note)}" placeholder="Note for this exercise" style="font-size:16px" aria-label="${esc(ex.name)} note"></div>` : ''}
-    <div class="ex-foot"><button class="btn small" data-a="addset" data-ei="${ei}">+ Set</button>${ex.sets.length > 1 ? `<button class="btn small" data-a="rmset" data-ei="${ei}">− Set</button>` : ''}${showNote ? '' : `<button class="btn small" data-a="exnote" data-ei="${ei}">Note</button>`}</div></div>`;
+    ${swapPanel}<div class="ex-foot"><button class="btn small" data-a="addset" data-ei="${ei}">+ Set</button>${ex.sets.length > 1 ? `<button class="btn small" data-a="rmset" data-ei="${ei}">− Set</button>` : ''}${showNote ? '' : `<button class="btn small" data-a="exnote" data-ei="${ei}">Note</button>`}<button class="btn small" data-a="swap" data-ei="${ei}">Swap</button></div></div>`;
 }
 
 function vFields(s) {
@@ -469,7 +472,7 @@ function vProgress() {
   const weeks = new Set(real.map((s) => Math.floor(dayDiff(s.date, real.map((x) => x.date).sort()[0]) / 7))).size;
   const L = lifts();
   if (!ui.px || (ui.px.startsWith('ex:') && !L.includes(ui.px.slice(3)))) ui.px = L.length ? 'ex:' + L[0] : 'c:z2';
-  const isEx = ui.px.startsWith('ex:'), bw = isEx && BW.has(ui.px.slice(3));
+  const isEx = ui.px.startsWith('ex:'), bw = isEx && isBW(ui.px.slice(3));
   const metrics = bw ? [['reps', 'Best reps'], ['total', 'Total reps'], ['top', 'Added weight']] : [['e1rm', 'Est. 1RM'], ['top', 'Heaviest'], ['vol', 'Volume']];
   if (isEx && !metrics.some((m) => m[0] === ui.metric)) ui.metric = metrics[0][0];
   const unit = isEx ? ({ e1rm: U(), top: U(), vol: U(), reps: 'reps', total: 'reps' }[ui.metric]) : (CARDIO_SERIES.find((c) => c[0] === ui.px) || [])[2];
@@ -481,9 +484,9 @@ function vProgress() {
     <optgroup label="Cardio and recovery">${CARDIO_SERIES.map((c) => `<option value="${c[0]}" ${ui.px === c[0] ? 'selected' : ''}>${c[1]}</option>`).join('')}</optgroup>`;
   // overview: first vs latest estimated strength for every lift
   const ov = L.map((name) => {
-    const p = series('ex:' + name, BW.has(name) ? 'reps' : 'e1rm'); if (!p.length) return '';
+    const p = series('ex:' + name, isBW(name) ? 'reps' : 'e1rm'); if (!p.length) return '';
     const b = p.reduce((a, c) => (c.v >= a.v ? c : a)), d = p.length > 1 && p[0].v ? ((p[p.length - 1].v - p[0].v) / p[0].v) * 100 : null;
-    return `<button class="pb" data-a="pick" data-v="ex:${esc(name)}"><strong>${esc(name)}</strong><span class="num">${fmt(p[p.length - 1].v)} ${BW.has(name) ? 'reps' : U()}</span>
+    return `<button class="pb" data-a="pick" data-v="ex:${esc(name)}"><strong>${esc(name)}</strong><span class="num">${fmt(p[p.length - 1].v)} ${isBW(name) ? 'reps' : U()}</span>
       <span class="sub">Best ${fmt(b.v)} on ${shortDate(b.date)}</span><span class="delta ${d > 0 ? 'up' : d < 0 ? 'down' : ''}">${d === null ? '' : (d > 0 ? '▲ ' : d < 0 ? '▼ ' : '') + Math.abs(Math.round(d)) + '%'}</span></button>`;
   }).join('');
   return `<div class="stack"><h1>Progress</h1>
@@ -522,8 +525,8 @@ function makeExample() {
     const d = new Date(t); d.setDate(t.getDate() - (5 - w) * 7 - 4 + off + 4 - 4); if (d > t) continue;
     const s = { id: uid(), day, date: ymd(d), time: '', created: d.getTime() + day, notes: '', example: true };
     if (DAYS[day].kind === 'lift') s.ex = DAYS[day].ex.map(([name]) => {
-      const bump = BW.has(name) ? 0 : Math.floor(w / 2) * (name.includes('Squat') || name.includes('Deadlift') || name.includes('Bench') ? 10 : 5), reps = 5 + (w % 2) * 2;
-      return { name, note: '', sets: [0, 1, 2, 3].map((i) => ({ w: BW.has(name) ? '' : String((base[name] || 20) + bump), r: String(BW.has(name) ? 4 + w + (i > 1 ? -1 : 0) : reps - (i > 1 ? 1 : 0)), rpe: String(7 + (i > 1 ? 1 : 0)), done: true })) };
+      const bump = isBW(name) ? 0 : Math.floor(w / 2) * (name.includes('Squat') || name.includes('Deadlift') || name.includes('Bench') ? 10 : 5), reps = 5 + (w % 2) * 2;
+      return { name, note: '', sets: [0, 1, 2, 3].map((i) => ({ w: isBW(name) ? '' : String((base[name] || 20) + bump), r: String(isBW(name) ? 4 + w + (i > 1 ? -1 : 0) : reps - (i > 1 ? 1 : 0)), rpe: String(7 + (i > 1 ? 1 : 0)), done: true })) };
     });
     else s.f = day === 1 ? { mod: 'Run', dur: String(45 + w * 5), hr: 'Zone 2' } : day === 5 ? { mod: 'Airdyne', dur: '35', pct: String(75 + (w % 3)) } : { saunaR: '3', saunaM: String(12 + w), cool: 'Shower', nsdr: '15', sleep: '7.5', rec: String(6 + (w % 3)) };
     out.push(s);
@@ -550,17 +553,26 @@ document.addEventListener('click', (e) => {
   const ei = +t.dataset.ei, si = +t.dataset.si;
   if (a === 'proto') { ui.proto = +v; window.scrollTo(0, 0); render(); return; }
   if (a === 'protoclose') { ui.proto = null; window.scrollTo(0, 0); render(); return; }
-  if (a === 'tab') { ui.proto = null; ui.tab = v; ui.open = null; ui.armed = ''; ui.restore = false; ui.backup = ''; window.scrollTo(0, 0); render(); return; }
+  if (a === 'tab') { ui.swap = ''; ui.proto = null; ui.tab = v; ui.open = null; ui.armed = ''; ui.restore = false; ui.backup = ''; window.scrollTo(0, 0); render(); return; }
   if (a === 'start') {
     ui.proto = null;
     const ex = S.sessions.find((x) => x.date === today() && x.day === +v && !x.example);
     ui.open = (ex || newSession(+v)).id; window.scrollTo(0, 0); render(); return;
   }
   if (a === 'open') { ui.open = v; window.scrollTo(0, 0); render(); return; }
-  if (a === 'close' || a === 'finish') { if (a === 'finish') toast('Saved'); ui.open = null; ui.armed = ''; ui.rest = 0; tickRest(); window.scrollTo(0, 0); render(); return; }
+  if (a === 'close' || a === 'finish') { if (a === 'finish') toast('Saved'); ui.open = null; ui.swap = ''; ui.armed = ''; ui.rest = 0; tickRest(); window.scrollTo(0, 0); render(); return; }
   if (a === 'addtime') { const d = new Date(); s.time = `${pad(d.getHours())}:${pad(d.getMinutes())}`; save(); render(); return; }
   if (a === 'addset' && s) { const ex = s.ex[ei]; ex.sets.push({ w: '', r: '', rpe: '', done: false }); save(); render(); return; }
   if (a === 'rmset' && s) { const ex = s.ex[ei]; if (ex.sets.length > 1) { ex.sets.pop(); save(); render(); } return; }
+  if (a === 'swap' && s) { ui.swap = s.id + ei; render(); setTimeout(() => { const el = $('#swapname'); if (el) { el.focus(); el.select(); } }, 30); return; }
+  if (a === 'swapcancel') { ui.swap = ''; render(); return; }
+  if (a === 'swapok' && s) {
+    const ex = s.ex[ei], name = ($('#swapname').value || '').trim().slice(0, 60);
+    ui.swap = '';
+    if (name && name !== ex.name) { const orig = ex.orig || ex.name; ex.name = name; ex.orig = name === orig ? '' : orig; save(); toast('Swapped to ' + name); }
+    render(); return;
+  }
+  if (a === 'swapback' && s) { const ex = s.ex[ei]; if (ex.orig) { ex.name = ex.orig; ex.orig = ''; } ui.swap = ''; save(); render(); return; }
   if (a === 'exnote' && s) { ui.noteOpen[s.id + ei] = true; render(); return; }
   if (a === 'addex' && s) {
     const name = $('#newex').value.trim().slice(0, 60); if (!name) return;
@@ -571,7 +583,7 @@ document.addEventListener('click', (e) => {
     st.done = !st.done;
     if (st.done) {
       const l = last ? (last.ex.sets[si] || last.ex.sets[last.ex.sets.length - 1]) : null;
-      if (l && !String(st.w).length && !BW.has(name)) st.w = String(l.w);
+      if (l && !String(st.w).length && !isBW(name)) st.w = String(l.w);
       if (l && !String(st.r).length) st.r = String(l.r);
       if (S.rest) { ui.rest = Date.now(); tickRest(); }
     }
@@ -618,6 +630,8 @@ document.addEventListener('change', (e) => {
   if (f === 'date' && t.value) { const s = byId(ui.open); s.date = t.value; save(); render(); }
   if (f === 'px') { ui.px = t.value; ui.metric = null; render(); }
 });
+
+document.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target && e.target.id === 'swapname') { e.preventDefault(); const b = document.querySelector('[data-a=swapok]'); if (b) b.click(); } });
 
 render();
 })();
